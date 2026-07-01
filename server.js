@@ -7,8 +7,15 @@ import { connectToDatabase } from './src/db/connect.js';
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Connect to MongoDB Atlas on startup
-connectToDatabase();
+// Middleware to connect to MongoDB Atlas for API requests
+async function ensureDatabaseConnected(req, res, next) {
+  try {
+    await connectToDatabase();
+    next();
+  } catch (error) {
+    next(error);
+  }
+}
 
 app.use(cors({ origin: true, credentials: true }));
 app.use(express.json());
@@ -24,7 +31,13 @@ app.get('/api/health', (_req, res) => {
 });
 
 // Routes
-app.use('/api/items', itemsRoutes);
+app.use('/api/items', ensureDatabaseConnected, itemsRoutes);
+
+// Error handler
+app.use((err, _req, res, _next) => {
+  console.error('Server error:', err);
+  res.status(500).json({ error: 'Internal server error' });
+});
 
 // Only listen when running locally (not on Vercel)
 if (!process.env.VERCEL) {
