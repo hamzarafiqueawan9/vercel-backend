@@ -13,6 +13,11 @@ connectToDatabase();
 app.use(cors({ origin: true, credentials: true }));
 app.use(express.json());
 
+// Root status route
+app.get('/', (_req, res) => {
+  res.send('Backend is running');
+});
+
 // Health check
 app.get('/api/health', (_req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
