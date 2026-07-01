@@ -9,6 +9,10 @@ const PORT = process.env.PORT || 5000;
 
 // Middleware to connect to MongoDB Atlas for API requests
 async function ensureDatabaseConnected(req, res, next) {
+  if (!process.env.MONGODB_URI) {
+    return res.status(500).json({ error: 'MONGODB_URI is not configured in the environment' });
+  }
+
   try {
     await connectToDatabase();
     next();
