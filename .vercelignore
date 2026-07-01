@@ -1,9 +1,0 @@
-.git
-.gitignore
-.vscode
-node_modules
-README.md
-*.log
-backend/.env*
-check-connect.cjs
-dist
