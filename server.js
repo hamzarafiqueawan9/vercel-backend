@@ -7,20 +7,6 @@ import { connectToDatabase } from './src/db/connect.js';
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Middleware to connect to MongoDB Atlas for API requests
-async function ensureDatabaseConnected(req, res, next) {
-  if (!process.env.MONGODB_URI) {
-    return res.status(500).json({ error: 'MONGODB_URI is not configured in the environment' });
-  }
-
-  try {
-    await connectToDatabase();
-    next();
-  } catch (error) {
-    next(error);
-  }
-}
-
 app.use(cors({ origin: true, credentials: true }));
 app.use(express.json());
 
@@ -35,19 +21,28 @@ app.get('/api/health', (_req, res) => {
 });
 
 // Routes
-app.use('/api/items', ensureDatabaseConnected, itemsRoutes);
+app.use('/api/items', itemsRoutes);
 
 // Error handler
 app.use((err, _req, res, _next) => {
   console.error('Server error:', err);
-  res.status(500).json({ error: 'Internal server error' });
+  res.status(500).json({ error: err.message || 'Internal server error' });
 });
 
-// Only listen when running locally (not on Vercel)
-if (!process.env.VERCEL) {
+async function startServer() {
+  if (!process.env.MONGODB_URI) {
+    console.error('❌ MONGODB_URI is not configured. Set it in .env for local dev or in Render environment variables.');
+    process.exit(1);
+  }
+
+  await connectToDatabase();
+
   app.listen(PORT, () => {
     console.log(`✅ Express API running on http://localhost:${PORT}`);
   });
 }
 
-export default app;
+startServer().catch((error) => {
+  console.error('Startup failed:', error);
+  process.exit(1);
+});

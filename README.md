@@ -1,19 +1,19 @@
 # Full-stack React + Express + MongoDB Atlas app
 
-## Deploy to Vercel
+## Deploy to Render
 
 1. Push this project to GitHub.
-2. Import it into Vercel.
-3. Add these environment variables in Vercel:
+2. Create a new Render Web Service.
+3. Set these environment variables in Render:
    - `MONGODB_URI`: your MongoDB Atlas connection string
-   - `VITE_API_URL`: your deployed backend URL, for example `https://your-backend.vercel.app/api`
+   - `DB_NAME`: optional MongoDB database name
 4. Deploy.
 
 ## Local development
 
 - Frontend: `npm run dev`
-- Backend: `npm run server`
+- Backend: `npm run dev`
 
 ## Backend env
 
-Copy [backend/.env.example](backend/.env.example) to `backend/.env` and fill in your Atlas URI.
+Copy `.env.example` to `.env` and fill in your Atlas URI.
